@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>pokedex</title>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.9.1/css/tachyons.min.css"/>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width">
+  </head>
+
+  <body>
+    <div id="main"></div>
+  </body>
+
+  <script src="./main.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    var node = document.getElementById('main');
+    var app = Elm.Main.embed(node);
+
+    app.ports.checkCache_.subscribe(function () {
+      var pokedex = window.localStorage.getItem("pokedex")
+      if (pokedex) {
+        app.ports.cacheResponse.send(JSON.parse(pokedex))
+      } else {
+        app.ports.cacheResponse.send(null)
+      }
+    })
+
+    app.ports.populateCache.subscribe(function (pokemon) {
+      window.localStorage.setItem("pokedex", JSON.stringify(pokemon))
+    })
+
+    app.ports.clearCache_.subscribe(function () {
+      window.localStorage.clear()
+    })
+  </script>
+</html>
