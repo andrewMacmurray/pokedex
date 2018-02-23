@@ -31,7 +31,7 @@ renderPokemonType model pokemonType =
         div
             [ classes
                 [ "ph3 pv3 br-pill tc"
-                , "dib f6 pointer ma2 ba2"
+                , "dib f6 pointer ma2 ba2 hover-white text-animate"
                 , "noselect"
                 , "bg-" ++ pokemonTypeColor pokemonType
                 ]
@@ -57,7 +57,7 @@ pokemonDetail : Pokemon -> Html Msg
 pokemonDetail ({ pokemonType, img } as pokemon) =
     div
         [ classes
-            [ "w-100 h-100 fixed top-0 left-0"
+            [ "w-100 h-100 fixed z-2 top-0 left-0"
             , "flex flex-column justify-center"
             , "pa4 tc"
             , "bg-" ++ primaryPokemonColor pokemonType
@@ -95,8 +95,8 @@ renderPokemon { pokemonType, id, img, name } =
     div [ class "pa1 w-20-ns w-50 dib tc pointer" ]
         [ div
             [ classes
-                [ "pa4-ns pa2"
-                , primaryPokemonTextColor pokemonType
+                [ "pa4-ns pa2 gray bg-animate"
+                , "hover-white text-animate"
                 , "bg-" ++ primaryPokemonColor pokemonType
                 ]
             , onClick <| SelectPokemon id

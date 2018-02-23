@@ -19,3 +19,7 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+
+.text-animate {
+  transition: color .1s ease-in-out
+}
