@@ -1,6 +1,6 @@
 module View exposing (..)
 
-import Data.Pokedex exposing (selectablePokemonTypes, filterPokemonOfType, pokedexToList, pokemonTypeColor)
+import Data.Pokedex exposing (..)
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -16,14 +16,14 @@ view model =
     div [ class "pa3 pb5 center mw8" ]
         [ h1 [ class "tc" ] [ text "Pokédex" ]
         , renderDetail model
-        , div [ class "flex flex-wrap justify-center pb4" ] <| List.map (renderPokemonType model) selectablePokemonTypes
+        , div [ class "flex flex-wrap justify-center pb4" ] <| List.map (pokemonTypeOption model) selectablePokemonTypes
         , div [ class "flex flex-wrap" ] <| renderPokedex model
         , p [ onClick ClearCache, class "mt5 ml3 red pointer" ] [ text "reset cache" ]
         ]
 
 
-renderPokemonType : Model -> PokemonType -> Html Msg
-renderPokemonType model pokemonType =
+pokemonTypeOption : Model -> PokemonType -> Html Msg
+pokemonTypeOption model pokemonType =
     let
         isSelected =
             model.selectedType == Just pokemonType
@@ -45,6 +45,20 @@ renderPokemonType model pokemonType =
             [ h5 [ class "ma0" ] [ text <| toString pokemonType ] ]
 
 
+pokemonTypeDetail : PokemonType -> Html msg
+pokemonTypeDetail pokemonType =
+    div
+        [ classes
+            [ "ph3 pv3 br-pill tc"
+            , "dib f6 pointer ma2 ba2"
+            , "noselect"
+            , "bg-" ++ pokemonTypeColor pokemonType
+            ]
+        , style [ width 90 ]
+        ]
+        [ h5 [ class "ma0" ] [ text <| toString pokemonType ] ]
+
+
 renderDetail : Model -> Html Msg
 renderDetail model =
     model.selectedPokemon
@@ -57,7 +71,7 @@ pokemonDetail : Pokemon -> Html Msg
 pokemonDetail ({ pokemonType, img } as pokemon) =
     div
         [ classes
-            [ "w-100 h-100 fixed z-2 top-0 left-0"
+            [ "w-100 h-100 fixed z-2 top-0 left-0 pointer"
             , "flex flex-column justify-center"
             , "pa4 tc"
             , "bg-" ++ primaryPokemonColor pokemonType
@@ -76,10 +90,23 @@ pokemonDetail ({ pokemonType, img } as pokemon) =
             , class "w-50 center bg-center contain"
             ]
             []
+        , div [] <| List.map pokemonTypeDetail pokemonType
         , h1 [] [ text pokemon.name ]
         , p [] [ text pokemon.weight ]
         , p [] [ text pokemon.height ]
         ]
+
+
+renderPokemonType : PokemonType -> Html Msg
+renderPokemonType pokemonType =
+    div
+        [ classes
+            [ "bg-" ++ pokemonTypeColor pokemonType
+            , "br-100 dib ba b--white mh1"
+            ]
+        , style [ width 15, height 15 ]
+        ]
+        []
 
 
 renderPokedex : Model -> List (Html Msg)
@@ -95,13 +122,16 @@ renderPokemon { pokemonType, id, img, name } =
     div [ class "pa1 w-20-ns w-50 dib tc pointer" ]
         [ div
             [ classes
-                [ "pa4-ns pa2 gray bg-animate"
-                , "hover-white text-animate"
+                [ "pa4-ns pa2 bg-animate relative"
+                , "text-animate"
+                , "hover-" ++ primaryPokemonTextHover pokemonType
                 , "bg-" ++ primaryPokemonColor pokemonType
+                , primaryPokemonTextColor pokemonType
                 ]
             , onClick <| SelectPokemon id
             ]
             [ p [ class "f7" ] [ text <| toString id ]
+            , div [ class "absolute top-1 right-1" ] <| List.map renderPokemonType pokemonType
             , div
                 [ style [ backgroundImage img, height 100 ]
                 , class "w-100 bg-center contain"
@@ -116,16 +146,61 @@ renderPokemon { pokemonType, id, img, name } =
 -- View Helpers
 
 
+primaryPokemonTextHover : List PokemonType -> String
+primaryPokemonTextHover =
+    typeColorFromList complementaryTextHover
+
+
 primaryPokemonTextColor : List PokemonType -> String
 primaryPokemonTextColor =
     typeColorFromList complementaryTextColor
 
 
+complementaryTextHover : PokemonType -> String
+complementaryTextHover pokemonType =
+    case pokemonType of
+        Water ->
+            "dark-gray"
+
+        Grass ->
+            "dark-gray"
+
+        Poison ->
+            "black"
+
+        Psychic ->
+            "dark-gray"
+
+        Fighting ->
+            "dark-gray"
+
+        Normal ->
+            "pink"
+
+        Rock ->
+            "black"
+
+        Ghost ->
+            "black"
+
+        Dragon ->
+            "blue"
+
+        _ ->
+            "white"
+
+
 complementaryTextColor : PokemonType -> String
 complementaryTextColor pokemonType =
     case pokemonType of
+        Fire ->
+            "dark-gray"
+
         Normal ->
             "gray"
+
+        Electric ->
+            "dark-gray"
 
         Ground ->
             "dark-gray"
@@ -133,8 +208,69 @@ complementaryTextColor pokemonType =
         Bug ->
             "dark-green"
 
+        Ice ->
+            "dark-blue"
+
         _ ->
             "white"
+
+
+pokemonTypeColor : PokemonType -> String
+pokemonTypeColor pokemonType =
+    case pokemonType of
+        Grass ->
+            "green"
+
+        Water ->
+            "blue"
+
+        Fire ->
+            "gold"
+
+        Normal ->
+            "light-gray"
+
+        Fighting ->
+            "orange"
+
+        Flying ->
+            "light-yellow"
+
+        Poison ->
+            "purple"
+
+        Electric ->
+            "yellow"
+
+        Ground ->
+            "moon-gray"
+
+        Psychic ->
+            "dark-pink"
+
+        Rock ->
+            "light-silver"
+
+        Ice ->
+            "lightest-blue"
+
+        Bug ->
+            "light-green"
+
+        Dragon ->
+            "dark-blue"
+
+        Ghost ->
+            "light-purple"
+
+        Dark ->
+            "navy"
+
+        Steel ->
+            "moon-gray"
+
+        Fairy ->
+            "washed-red"
 
 
 primaryPokemonColor : List PokemonType -> String
