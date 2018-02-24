@@ -20,6 +20,7 @@ initialModel =
     { pokedex = Dict.empty
     , selectedPokemon = Nothing
     , selectedType = Nothing
+    , imageOption = Sprite
     }
 
 
@@ -53,6 +54,9 @@ update msg model =
 
         ToggleSelectedType pokemonType ->
             handleToggleSelectedType pokemonType model ! []
+
+        SetImageOption imageOption ->
+            { model | imageOption = imageOption } ! []
 
 
 

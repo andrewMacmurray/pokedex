@@ -15,7 +15,7 @@ getPokedex =
 
 pokedexUrl : String
 pokedexUrl =
-    "https://api.myjson.com/bins/10w18t"
+    "https://api.myjson.com/bins/i4pil"
 
 
 pokedexDecoder : Decoder Pokedex
@@ -29,6 +29,8 @@ pokemonDecoder =
         |> required "id" int
         |> required "name" string
         |> required "img" string
+        |> required "sprite" string
+        |> required "spriteAnimated" string
         |> custom pokemonTypeDecoder
         |> optional "weaknesses" pokemonTypes []
         |> required "height" string
@@ -61,6 +63,8 @@ encodePokemon pokemon =
         [ ( "id", Encode.int pokemon.id )
         , ( "name", Encode.string pokemon.name )
         , ( "img", Encode.string pokemon.img )
+        , ( "sprite", Encode.string pokemon.sprite )
+        , ( "spriteAnimated", Encode.string pokemon.spriteAnimated )
         , ( "pokemonType", Encode.list <| List.map fromPokemonType pokemon.pokemonType )
         , ( "weaknesses", Encode.list <| List.map fromPokemonType pokemon.weaknesses )
         , ( "height", Encode.string pokemon.height )

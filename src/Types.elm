@@ -9,6 +9,7 @@ type alias Model =
     { pokedex : Pokedex
     , selectedPokemon : Maybe Int
     , selectedType : Maybe PokemonType
+    , imageOption : ImageOption
     }
 
 
@@ -20,11 +21,19 @@ type alias Pokemon =
     { id : Int
     , name : String
     , img : String
+    , sprite : String
+    , spriteAnimated : String
     , pokemonType : List PokemonType
     , weaknesses : List PokemonType
     , height : String
     , weight : String
     }
+
+
+type ImageOption
+    = ThreeD
+    | Sprite
+    | Animated
 
 
 type PokemonType
@@ -56,3 +65,4 @@ type Msg
     | SelectPokemon Int
     | ClearSelectedPokemon
     | ToggleSelectedType PokemonType
+    | SetImageOption ImageOption

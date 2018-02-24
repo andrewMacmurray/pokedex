@@ -15,11 +15,27 @@ view : Model -> Html Msg
 view model =
     div [ class "pa3 pb5 center mw8" ]
         [ h1 [ class "tc" ] [ text "Pokédex" ]
-        , renderDetail model
+        , renderSelectedPokemonDetail model
         , div [ class "flex flex-wrap justify-center pb4" ] <| List.map (pokemonTypeOption model) selectablePokemonTypes
+        , imageOptions model
         , div [ class "flex flex-wrap" ] <| renderPokedex model
         , p [ onClick ClearCache, class "mt5 ml3 red pointer" ] [ text "reset cache" ]
         ]
+
+
+imageOptions : Model -> Html Msg
+imageOptions model =
+    div [] <| List.map (imageOption model) [ Sprite, Animated, ThreeD ]
+
+
+imageOption : Model -> ImageOption -> Html Msg
+imageOption model opt =
+    div
+        [ onClick <| SetImageOption opt
+        , class "pointer f6 ttu dib ml1 hover-red text-animate"
+        , classList [ ( "red", opt == model.imageOption ) ]
+        ]
+        [ p [ class "mr4" ] [ text <| imageOptionToString opt ] ]
 
 
 pokemonTypeOption : Model -> PokemonType -> Html Msg
@@ -59,41 +75,45 @@ pokemonTypeDetail pokemonType =
         [ h5 [ class "ma0" ] [ text <| toString pokemonType ] ]
 
 
-renderDetail : Model -> Html Msg
-renderDetail model =
+renderSelectedPokemonDetail : Model -> Html Msg
+renderSelectedPokemonDetail model =
     model.selectedPokemon
         |> Maybe.andThen (\n -> Dict.get n model.pokedex)
-        |> Maybe.map pokemonDetail
+        |> Maybe.map (renderPokemonDetail model)
         |> Maybe.withDefault (span [] [])
 
 
-pokemonDetail : Pokemon -> Html Msg
-pokemonDetail ({ pokemonType, img } as pokemon) =
-    div
-        [ classes
-            [ "w-100 h-100 fixed z-2 top-0 left-0 pointer"
-            , "flex flex-column justify-center"
-            , "pa4 tc"
-            , "bg-" ++ primaryPokemonColor pokemonType
-            , primaryPokemonTextColor pokemonType
-            , "overflow-scroll"
+renderPokemonDetail : Model -> Pokemon -> Html Msg
+renderPokemonDetail model ({ pokemonType, img, sprite, spriteAnimated } as pokemon) =
+    div [ class "fixed w-100 h-100 z-2 top-0 left-0 pointer white" ]
+        [ div
+            [ classes
+                [ "w-100 h-100 flex flex-column justify-center"
+                , "tc pa4"
+                , "bg-" ++ primaryPokemonColor pokemonType
+                , primaryPokemonTextColor pokemonType
+                , "overflow-scroll"
+                ]
+            , onClick ClearSelectedPokemon
             ]
-        , onClick ClearSelectedPokemon
-        ]
-        [ h1
-            [ class "absolute top-1 right-1 ma0 pa3 pointer"
+            [ div [ class "flex items-center", style [ height 200 ] ]
+                [ div
+                    [ style <| imageOptionDetailStyles model.imageOption pokemon
+                    , class "w-33 center bg-center contain"
+                    ]
+                    []
+                ]
+            , div [] <| List.map pokemonTypeDetail pokemonType
+            , h1 [] [ text pokemon.name ]
+            , p [] [ text pokemon.weight ]
+            , p [] [ text pokemon.height ]
+            ]
+        , p
+            [ class "f2 absolute z-5 top-1 right-1 ma0 ph3 pb3 pt2 pointer"
             , onClick ClearSelectedPokemon
             ]
             [ text "X" ]
-        , div
-            [ style [ backgroundImage img, height 200 ]
-            , class "w-50 center bg-center contain"
-            ]
-            []
-        , div [] <| List.map pokemonTypeDetail pokemonType
-        , h1 [] [ text pokemon.name ]
-        , p [] [ text pokemon.weight ]
-        , p [] [ text pokemon.height ]
+        , div [ class "absolute top-1 left-1 z-5" ] [ imageOptions model ]
         ]
 
 
@@ -114,11 +134,11 @@ renderPokedex model =
     model.pokedex
         |> pokedexToList
         |> filterPokemonOfType model.selectedType
-        |> List.map renderPokemon
+        |> List.map (renderPokemon model.imageOption)
 
 
-renderPokemon : Pokemon -> Html Msg
-renderPokemon { pokemonType, id, img, name } =
+renderPokemon : ImageOption -> Pokemon -> Html Msg
+renderPokemon opt ({ pokemonType, id, name } as pokemon) =
     div [ class "pa1 w-20-ns w-50 dib tc pointer" ]
         [ div
             [ classes
@@ -132,11 +152,13 @@ renderPokemon { pokemonType, id, img, name } =
             ]
             [ p [ class "f7" ] [ text <| toString id ]
             , div [ class "absolute top-1 right-1" ] <| List.map renderPokemonType pokemonType
-            , div
-                [ style [ backgroundImage img, height 100 ]
-                , class "w-100 bg-center contain"
+            , div [ class "flex items-center", style [ height 100 ] ]
+                [ div
+                    [ style <| imageOptionStyles opt pokemon
+                    , class "w-100 bg-center contain"
+                    ]
+                    []
                 ]
-                []
             , p [] [ text name ]
             ]
         ]
@@ -271,6 +293,66 @@ pokemonTypeColor pokemonType =
 
         Fairy ->
             "washed-red"
+
+
+imageOptionDetailStyles : ImageOption -> Pokemon -> List ( String, String )
+imageOptionDetailStyles imageOption pokemon =
+    let
+        url =
+            imageOptionUrl imageOption pokemon
+    in
+        case imageOption of
+            ThreeD ->
+                [ backgroundImage url, height 200 ]
+
+            Animated ->
+                [ backgroundImage url, height 150 ]
+
+            Sprite ->
+                [ backgroundImage url, height 200 ]
+
+
+imageOptionStyles : ImageOption -> Pokemon -> List ( String, String )
+imageOptionStyles imageOption pokemon =
+    let
+        url =
+            imageOptionUrl imageOption pokemon
+    in
+        case imageOption of
+            ThreeD ->
+                [ backgroundImage url, height 100 ]
+
+            Animated ->
+                [ backgroundImage url, height 70 ]
+
+            Sprite ->
+                [ backgroundImage url, height 100 ]
+
+
+imageOptionUrl : ImageOption -> Pokemon -> String
+imageOptionUrl imageOption pokemon =
+    case imageOption of
+        ThreeD ->
+            pokemon.img
+
+        Animated ->
+            pokemon.spriteAnimated
+
+        Sprite ->
+            pokemon.sprite
+
+
+imageOptionToString : ImageOption -> String
+imageOptionToString imageOption =
+    case imageOption of
+        ThreeD ->
+            "3D"
+
+        Animated ->
+            "Animated"
+
+        Sprite ->
+            "Sprite"
 
 
 primaryPokemonColor : List PokemonType -> String
