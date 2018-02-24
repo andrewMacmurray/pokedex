@@ -19,8 +19,8 @@ makePokedex pokemon =
 
 
 filterPokemonOfType : Maybe PokemonType -> List Pokemon -> List Pokemon
-filterPokemonOfType selectedPokemon pokemon =
-    case selectedPokemon of
+filterPokemonOfType selectedPokemonType pokemon =
+    case selectedPokemonType of
         Just pkt ->
             pokemon |> List.filter (\p -> List.member pkt p.pokemonType)
 
