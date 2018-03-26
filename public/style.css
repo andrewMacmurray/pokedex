@@ -6,6 +6,10 @@ body {
   cursor: pointer;
 }
 
+.disabled {
+  pointer-events: none;
+}
+
 .ba2 {
   border-width: 2px;
   border-style: solid;

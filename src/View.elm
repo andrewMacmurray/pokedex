@@ -80,12 +80,15 @@ renderSelectedPokemonDetail model =
     model.selectedPokemon
         |> Maybe.andThen (\n -> Dict.get n model.pokedex)
         |> Maybe.map (renderPokemonDetail model)
-        |> Maybe.withDefault (span [] [])
+        |> Maybe.withDefault (div [ class "o-0 disabled" ] [])
 
 
 renderPokemonDetail : Model -> Pokemon -> Html Msg
 renderPokemonDetail model ({ pokemonType, img, sprite, spriteAnimated } as pokemon) =
-    div [ class "fixed w-100 h-100 z-2 top-0 left-0 pointer white" ]
+    div
+        [ class "fixed w-100 h-100 z-2 top-0 left-0 pointer white o-100"
+        , style [ ( "transition", "opacity 0.2s ease" ) ]
+        ]
         [ div
             [ classes
                 [ "w-100 h-100 flex flex-column justify-center"

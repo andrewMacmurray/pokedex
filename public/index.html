@@ -33,6 +33,7 @@
 
     app.ports.clearCache_.subscribe(function () {
       window.localStorage.clear()
+      window.location.reload()
     })
   </script>
 </html>
