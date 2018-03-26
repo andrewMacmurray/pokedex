@@ -1,6 +1,6 @@
 # Pokédex
 
-An example Pokédex and experiment with offline caching to localStorage (see it running here https://gigantic-copy.surge.sh)
+An example Pokédex and experiment with offline caching to localStorage (see it running here https://pokedex-a1b6e.firebaseapp.com/)
 
 ## How it works
 
